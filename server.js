@@ -25,7 +25,7 @@ const promptUser = async () => {
   const response = await inquirer.prompt([
     {
       type: 'list',
-      name: 'menu',
+      name: 'action',
       message: 'What would you like to do?',
       choices: [
         'View All Employees',
@@ -40,7 +40,7 @@ const promptUser = async () => {
     }
   ]);
 
-  const { menu } = response;
+  const { action } = response;
   
   if (menu === 'View All Employees') {
 
