@@ -1,40 +1,10 @@
-
+// Requirements
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
 
-// Connect to database
-const connection = mysql.createConnection(
-  {
-    host: 'localhost',
-    user: 'root',
-    // TODO: Add MySQL password here
-    password: 'Pa$$w0rd123',
-    database: 'ems_db'
-  },
-  console.log(`Connected to the ems_db database.`)
-);
 
-// const actionMenu = async () => {
-//   const response = await inquirer.prompt([
-//     {
-//       type: 'list',
-//       name: 'action',
-//       message: 'What would you like to do?',
-//       choices: [
-//         'View All Employees',
-//         'Add Employee',
-//         'Update Employee Role',
-//         'View All Roles',
-//         'Add Role',
-//         'View All Departments',
-//         'Add Department',
-//         'Quit'
-//       ]
-//     }
-//   ]);
-// }
-
+// Prompt User Function (main)
 const promptUser = async () => {
   const response = await inquirer.prompt([
     {
@@ -233,3 +203,16 @@ function quitDB() {
 }
 
 promptUser();
+
+// Connect to database
+const connection = mysql.createConnection(
+  {
+    host: 'localhost',
+    user: 'root',
+    // TODO: Add MySQL password here
+    password: '',
+    database: 'ems_db'
+  },
+  console.log(`Connected to the ems_db database.`)
+);
+
