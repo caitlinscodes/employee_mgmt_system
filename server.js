@@ -1,15 +1,15 @@
-const express = require('express');
+// const express = require('express');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-// const cTable = require('console.table');
+const cTable = require('console.table');
 // const Connection = require('mysql2/typings/mysql/lib/Connection');
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+// const PORT = process.env.PORT || 3001;
+// const app = express();
 
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// // Express middleware
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
 
 // Connect to database
 const connection = mysql.createConnection(
@@ -165,150 +165,55 @@ const promptUser = async () => {
   //   dbInfo.department.add(dept_name);
   //   actionMenu();
   // }
+
+  if (action === 'Quit') {
+    quitDB();
+  }
 }
 
 // View All Functions
 viewEmployees = () => {
-  console.log('All Employees...\n');
-    const sql = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.dept_name AS department, role.salary, CONCAT (manager.first_name, manager.last_name) AS manager, FROM employee, LEFT JOIN role ON employee.role_id = role.id, LEFT JOIN department ON role.dept_id = department.id, LEFT JOIN employee manager ON employee.mngr_id = manager.id'
+    const sql = 'SELECT employee.id, employee.first_name, employee.last_name, role.title AS title, department.dept_name AS department, role.salary, CONCAT (manager.first_name, " ", manager.last_name) AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.dept_id = department.id LEFT JOIN employee manager ON employee.mngr_id = manager.id';
     
     connection.query(sql, (err, rows) => {
       if (err) throw err;
       console.table(rows);
-      actionMenu();
+      promptUser();
     })
 }
 
 viewRoles = () => {
-  console.log('All Roles...\n');
-    const sql = 'SELECT role.id, role.title, department.dept_name AS department FROM role INNER JOIN department ON role.dept_id = department.id';
+    const sql = 'SELECT role.id, role.title, department.dept_name AS department, role.salary FROM role INNER JOIN department ON role.dept_id = department.id';
 
     connection.query(sql, (err, rows) => {
       if (err) throw err;
       console.table(rows);
-      actionMenu();
+      promptUser();
     })
 }
 
 viewDepts = () => {
-  console.log('All Departments...\n');
-    const sql = 'SELECT department.id AS id, department.dept_name AS department FROM department';
+    const sql = 'SELECT id, dept_name FROM department';
 
     connection.query(sql, (err, rows) => {
       if (err) throw err;
       console.table(rows);
-      actionMenu();
+      promptUser();
     })
 }
 
-// Add Functions
+
+// Add New Functions
 
 
-// Update Function
+// Update Existing Function
+
+
+// Exit Function
+function quitDB() {
+  connection.end();
+  console.log("Goodbye!")
+}
 
 promptUser();
 
-
-//Borrowed from unit 12 mini-project
-
-// Create a movie
-// app.post('/api/new-movie', ({ body }, res) => {
-//   const sql = `INSERT INTO movies (movie_name)
-//     VALUES (?)`;
-//   const params = [body.movie_name];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: body
-//     });
-//   });
-// });
-
-// // Read all movies
-// app.get('/api/movies', (req, res) => {
-//   const sql = `SELECT id, movie_name AS title FROM movies`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// // Delete a movie
-// app.delete('/api/movie/:id', (req, res) => {
-//   const sql = `DELETE FROM movies WHERE id = ?`;
-//   const params = [req.params.id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.statusMessage(400).json({ error: res.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//       message: 'Movie not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'deleted',
-//         changes: result.affectedRows,
-//         id: req.params.id
-//       });
-//     }
-//   });
-// });
-
-// // Read list of all reviews and associated movie name using LEFT JOIN
-// app.get('/api/movie-reviews', (req, res) => {
-//   const sql = `SELECT movies.movie_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//       return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// // BONUS: Update review name
-// app.put('/api/review/:id', (req, res) => {
-//   const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
-//   const params = [req.body.review, req.params.id];
-
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//         message: 'Movie not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'success',
-//         data: req.body,
-//         changes: result.affectedRows
-//       });
-//     }
-//   });
-// });
-
-// // Default response for any other request (Not Found)
-// app.use((req, res) => {
-//   res.status(404).end();
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
