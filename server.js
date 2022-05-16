@@ -21,6 +21,26 @@ const db = mysql.createConnection(
   console.log(`Connected to the ems_db database.`)
 );
 
+const actionMenu = async () => {
+  const response = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      message: 'What would you like to do?',
+      choices: [
+        'View All Employees',
+        'Add Employee',
+        'Update Employee Role',
+        'View All Roles',
+        'Add Role',
+        'View All Departments',
+        'Add Department',
+        'Quit'
+      ]
+    }
+  ]);
+}
+
 const promptUser = async () => {
   const response = await inquirer.prompt([
     {
@@ -42,13 +62,113 @@ const promptUser = async () => {
 
   const { action } = response;
   
-  if (menu === 'View All Employees') {
-
+  // Employee Prompts
+  if (action === 'View All Employees') {
+    console.table(await dbInfo.employee.get());
+    actionMenu();
   };
+
+  if (action === 'Add Employee') {
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'first_name',
+        message: 'Please enter the first name of the employee you would like to add.'
+      },
+      {
+        type: 'input',
+        name: 'last_name',
+        message: 'Please enter the last name of the employee you would like to add.'
+      },
+      {
+        type: 'input',
+        name: 'mngr_id',
+        message: 'Please enter the manager ID of the employee you would like to add.'
+      },
+      {
+        type: 'input',
+        name: 'role_id',
+        message: 'Please enter the role ID of the employee you would like to add.'
+      },
+    ]);
+     
+    const { first_name, last_name, mngr_id, role_id } = response;
+    dbInfo.employee.add(first_name, last_name, mngr_id, role_id);
+    actionMenu();
+  }
+
+  if (action === 'Update Employee Role') {
+    console.table(await dbInfo.employee.get());
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'id',
+        message: 'Please enter the employee ID for the employee you would like to update.'
+      },
+      {
+        type: 'input',
+        name: 'role_id',
+        message: 'Please enter the new role ID for the designated employee.'
+      }
+    ]);
+
+    const { id, role_id } = response;
+    dbInfo.employee.update(id, role_id);
+    actionMenu();
+  }
+
+  // Role Prompts
+  if (action === 'View All Roles') {
+    console.table(await dbInfo.role.get());
+    actionMenu();
+  };
+
+  if (action === 'Add Role') {
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'title',
+        message: 'Please enter the title of the role you would like to add.'
+      },
+      {
+        type: 'input',
+        name: 'salary',
+        message: 'Please enter the salary of the role you would like to add.'
+      },
+      {
+        type: 'input',
+        name: 'dept_id',
+        message: 'Please enter the department ID of the role you would like to add.'
+      }
+    ]);
+     
+    const { title, salary, dept_id } = response;
+    dbInfo.role.add(title, salary, dept_id);
+    actionMenu();
+  }
+
+  // Department Prompts
+  if (action === 'View All Departments') {
+    console.table(await dbInfo.department.get());
+    actionMenu();
+  };
+
+  if (action === 'Add Department') {
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'dept_name',
+        message: 'Please enter the name of the department you would like to add.'
+      }
+    ]);
+     
+    const { dept_name } = response;
+    dbInfo.department.add(dept_name);
+    actionMenu();
+  }
 }
 
-
-
+promptUser();
 
 
 //Borrowed from unit 12 mini-project
